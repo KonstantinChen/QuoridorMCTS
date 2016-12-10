@@ -16,14 +16,14 @@ public class HumanPlayer {
 
 	public HumanPlayer play(GameBoard board, HumanPlayer opponent) {
 		// if the opponent has won, return opponent
-		if (board.win(opponent.getColor())) {
+		if (board.hasWon(opponent.getColor())) {
 			return opponent;
 		}
 
 		// print the board
 
 		// print moves
-		List<int[]> moves = board.getMoves(color);
+		List<Position> moves = board.getMoves(color);
 
 		int nextMove = s.nextInt();
 

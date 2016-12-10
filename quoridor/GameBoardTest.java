@@ -20,104 +20,103 @@ public class GameBoardTest {
 
 	@Test
 	public void testMoveTo() {
-		gb.moveTo('r', new int[] { 4, 7 });
-		gb.moveTo('b', new int[] { 3, 3 });
-		assertArrayEquals("red wrong", gb.players[0], new int[] { 4, 7 });
-		assertArrayEquals("blue wrong", gb.players[1], new int[] { 3, 3 });
+		Position red = new Position(4, 7);
+		Position blue = new Position(3, 3);
+		gb.moveTo('r', red);
+		gb.moveTo('b', blue);
+		assertEquals("red wrong", gb.redPos(), red);
+		assertEquals("blue wrong", gb.bluePos(), blue);
 	}
 
 	@Test
 	public void getMovesStartBlue() {
-		List<int[]> moves = gb.getMoves('b');
+		List<Position> moves = gb.getMoves('b');
 		assertEquals("Missing moves", moves.size(), 3);
-		int[] left = new int[] { 3, 8 };
-		int[] right = new int[] { 5, 8 };
-		int[] up = new int[] { 4, 7 };
-		assertTrue(
-				"Wrong moves",
-				Arrays.equals(up, moves.get(0))
-						&& Arrays.equals(left, moves.get(1))
-						&& Arrays.equals(right, moves.get(2)));
+		Position left = new Position(3, 8);
+		Position right = new Position(5, 8);
+		Position up = new Position(4, 7);
+		Position test = new Position(4, 7);
+		assertEquals("Wrong up", up, moves.get(0));
+		assertEquals("Wrong left", left, moves.get(1));
+		assertEquals("Wrong right", right, moves.get(2));
 	}
 
 	@Test
 	public void getMovesStartRed() {
-		List<int[]> moves = gb.getMoves('r');
+		List<Position> moves = gb.getMoves('r');
 		assertEquals("Missing moves", moves.size(), 3);
-		int[] left = new int[] { 3, 0 };
-		int[] right = new int[] { 5, 0 };
-		int[] down = new int[] { 4, 1 };
-		assertTrue(
-				"Wrong moves",
-				Arrays.equals(down, moves.get(1))
-						&& Arrays.equals(left, moves.get(0))
-						&& Arrays.equals(right, moves.get(2)));
+		Position left = new Position(3, 0);
+		Position right = new Position(5, 0);
+		Position down = new Position(4, 1);
+		assertEquals("Wrong left", left, moves.get(0));
+		assertEquals("Wrong down", down, moves.get(1));
+		assertEquals("Wrong right", right, moves.get(2));
 	}
 
 	@Test
 	public void getMovesNormalBlue() {
-		gb.players[1][1] = 7;
-		List<int[]> moves = gb.getMoves('b');
+		gb.player[1].setRow(7);
+		List<Position> moves = gb.getMoves('b');
 		assertEquals("Missing moves", moves.size(), 4);
-		int[] left = new int[] { 3, 7 };
-		int[] right = new int[] { 5, 7 };
-		int[] up = new int[] { 4, 6 };
-		int[] down = new int[] { 4, 8 };
-		assertTrue("0", Arrays.equals(up, moves.get(0)));
-		assertTrue("1", Arrays.equals(left, moves.get(1)));
-		assertTrue("3", Arrays.equals(down, moves.get(2)));
-		assertTrue("4", Arrays.equals(right, moves.get(3)));
+		Position left = new Position(3, 7);
+		Position right = new Position(5, 7);
+		Position up = new Position(4, 6);
+		Position down = new Position(4, 8);
+		assertEquals("Wrong up", up, moves.get(0));
+		assertEquals("Wrong left", left, moves.get(1));
+		assertEquals("Wrong down", down, moves.get(2));
+		assertEquals("Wrong right", right, moves.get(3));
 	}
 
 	@Test
 	public void getMovesNormalRed() {
-		gb.players[0][1] = 1;
-		List<int[]> moves = gb.getMoves('r');
+		gb.player[0].setRow(1);
+		List<Position> moves = gb.getMoves('r');
 		assertEquals("Missing moves", moves.size(), 4);
-		int[] left = new int[] { 3, 1 };
-		int[] right = new int[] { 5, 1 };
-		int[] up = new int[] { 4, 0 };
-		int[] down = new int[] { 4, 2 };
-		assertTrue("0", Arrays.equals(up, moves.get(0)));
-		assertTrue("1", Arrays.equals(left, moves.get(1)));
-		assertTrue("3", Arrays.equals(down, moves.get(2)));
-		assertTrue("4", Arrays.equals(right, moves.get(3)));
+		Position left = new Position(3, 1);
+		Position right = new Position(5, 1);
+		Position up = new Position(4, 0);
+		Position down = new Position(4, 2);
+		assertEquals("Wrong up", up, moves.get(0));
+		assertEquals("Wrong left", left, moves.get(1));
+		assertEquals("Wrong down", down, moves.get(2));
+		assertEquals("Wrong right", right, moves.get(3));
 	}
 
 	@Test
 	public void getMovesJumpBlue() {
-		int[] blue = new int[] { 4, 7 };
-		int[] red = new int[] { 4, 6 };
+		Position blue = new Position(4, 7);
+		Position red = new Position(4, 6);
 		gb.moveTo('b', blue);
 		gb.moveTo('r', red);
-		List<int[]> moves = gb.getMoves('b');
-		int[] left = new int[] { 3, 7 };
-		int[] right = new int[] { 5, 7 };
-		int[] up = new int[] { 4, 5 };
-		int[] down = new int[] { 4, 8 };
-		assertTrue("0", Arrays.equals(up, moves.get(3)));
-		assertTrue("1", Arrays.equals(left, moves.get(0)));
-		assertTrue("3", Arrays.equals(down, moves.get(1)));
-		assertTrue("4", Arrays.equals(right, moves.get(2)));
+		List<Position> moves = gb.getMoves('b');
+		Position left = new Position(3, 7);
+		Position right = new Position(5, 7);
+		Position up = new Position(4, 5);
+		Position down = new Position(4, 8);
+		assertEquals("Wrong up", up, moves.get(3));
+		assertEquals("Wrong left", left, moves.get(0));
+		assertEquals("Wrong down", down, moves.get(1));
+		assertEquals("Wrong right", right, moves.get(2));
 	}
 
 	@Test
 	public void getMovesSide() {
-		int[] blue = new int[] { 4, 7 };
-		int[] red = new int[] { 4, 6 };
+		Position blue = new Position(4, 7);
+		Position red = new Position(4, 6);
 		gb.horizontal[4][5] = true;
 		gb.moveTo('b', blue);
 		gb.moveTo('r', red);
-		List<int[]> moves = gb.getMoves('b');
-		int[] left = new int[] { 3, 7 };
-		int[] right = new int[] { 5, 7 };
-		int[] upleft = new int[] { 3, 6 };
-		int[] upright = new int[] { 5, 6 };
-		int[] down = new int[] { 4, 8 };
-		assertTrue("0", Arrays.equals(upleft, moves.get(3)));
-		assertTrue("5", Arrays.equals(upright, moves.get(4)));
-		assertTrue("1", Arrays.equals(left, moves.get(0)));
-		assertTrue("3", Arrays.equals(down, moves.get(1)));
-		assertTrue("4", Arrays.equals(right, moves.get(2)));
+		List<Position> moves = gb.getMoves('b');
+		Position left = new Position(3, 7);
+		Position right = new Position(5, 7);
+		Position upleft = new Position(3, 6);
+		Position upright = new Position(5, 6);
+		Position down = new Position(4, 8);
+		assertEquals("Wrong upleft", upleft, moves.get(3));
+		assertEquals("Wrong upright", upright, moves.get(4));
+		assertEquals("Wrong left", left, moves.get(0));
+		assertEquals("Wrong down", down, moves.get(1));
+		assertEquals("Wrong right", right, moves.get(2));
 	}
 }

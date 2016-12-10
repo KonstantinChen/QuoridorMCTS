@@ -2,7 +2,10 @@ package quoridor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * A class representing a Quoridor board
@@ -15,7 +18,8 @@ public class GameBoard {
 	protected int row, col;
 	protected boolean[][] vertical;
 	protected boolean[][] horizontal;
-	protected int[][] players = new int[2][2];
+	protected Position red, blue;
+	protected Position[] player = new Position[2];
 	protected int rBar, bBar;
 
 	public GameBoard() {
@@ -28,109 +32,85 @@ public class GameBoard {
 		col = c;
 		vertical = new boolean[col - 1][row];
 		horizontal = new boolean[col][row - 1];
-		// red[0] = col / 2;
-		// red[1] = 0;
-		// blue[0] = col / 2;
-		// blue[1] = row - 1;
-		players[0][0] = col / 2;
-		players[0][1] = 0;
-		players[1][0] = col / 2;
-		players[1][1] = row - 1;
+		red = new Position(col/2,0);
+		blue = new Position(col/2,row-1);
+		player[0] = red;
+		player[1] = blue;
 		rBar = bBar = 10;
 	}
 
-	public List<int[]> getMoves(char o) {
-		List<int[]> moves = new ArrayList<int[]>();
-		// int[][] chessCons
+	public List<Position> getMoves(char o) {
+		List<Position> moves = new ArrayList<Position>();
 		int playerNum = 0;
 		if (o == 'b') {
 			playerNum = 1;
 		}
+		Position cur = player[playerNum];
 		// TODO:
 		// DONE
 		// directly upward
 		if (!hasWallAbove(playerNum) && !hasOppAbove(o)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0];
-			move[1] = players[playerNum][1] - 1;
+			Position move = new Position(cur.getCol(),cur.getRow()-1);
 			moves.add(move);
 		}
 		// DONE
 		// directly leftward
 		if (!hasWallLeft(playerNum) && !hasOppLeft(o)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 1;
-			move[1] = players[playerNum][1];
+			Position move = new Position(cur.getCol()-1,cur.getRow());
 			moves.add(move);
 		}
 		// DONE
 		// directly downward
 		if (!hasWallBelow(playerNum) && !hasOppBelow(o)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0];
-			move[1] = players[playerNum][1] + 1;
+			Position move = new Position(cur.getCol(),cur.getRow()+1);
 			moves.add(move);
 		}
 		// DONE
 		// directly rightward
 		if (!hasWallRight(playerNum) && !hasOppRight(o)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 1;
-			move[1] = players[playerNum][1];
+			Position move = new Position(cur.getCol()+1,cur.getRow());
 			moves.add(move);
 		}
 		// DONE
 		// jump over upward
-		if (players[playerNum][1] >= 2 && hasOppAbove(o)
+		if (cur.getRow() >= 2 && hasOppAbove(o)
 				&& !hasWallAbove(playerNum)
 				&& !hasWallAbove((playerNum + 1) % 2)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0];
-			move[1] = players[playerNum][1] - 2;
+			Position move = new Position(cur.getCol(),cur.getRow()-2);
 			moves.add(move);
 		}
 		// jump over leftward
-		if (players[playerNum][0] >= 2 && hasOppLeft(o)
+		if (cur.getCol() >= 2 && hasOppLeft(o)
 				&& !hasWallLeft(playerNum) && !hasWallLeft((playerNum + 1) % 2)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 2;
-			move[1] = players[playerNum][1];
+			Position move = new Position(cur.getCol()-2,cur.getRow());
 			moves.add(move);
 		}
 		// jump over downward
-		if (players[playerNum][1] < row - 2 && hasOppBelow(o)
+		if (cur.getRow() < row - 2 && hasOppBelow(o)
 				&& !hasWallBelow(playerNum)
 				&& !hasWallBelow((playerNum + 1) % 2)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0];
-			move[1] = players[playerNum][1] + 2;
+			Position move = new Position(cur.getCol(),cur.getRow()+2);
 			moves.add(move);
 		}
 		// jump over rightward
-		if (players[playerNum][0] < col - 2 && hasOppRight(o)
+		if (cur.getCol() < col - 2 && hasOppRight(o)
 				&& !hasWallRight(playerNum)
 				&& !hasWallRight((playerNum + 1) % 2)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 2;
-			move[1] = players[playerNum][1];
+			Position move = new Position(cur.getCol()+2,cur.getRow());
 			moves.add(move);
 		}
 		// left&right upward
 		if (hasOppAbove(o) && hasWallAbove((playerNum + 1) % 2)
 				&& !hasWallAbove(playerNum)
 				&& !hasWallLeft((playerNum + 1) % 2) && !hasWallLeft(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 1;
-			move[1] = players[playerNum][1] - 1;
+			Position move = new Position(cur.getCol()-1,cur.getRow()-1);
 			moves.add(move);
 		}
 		if (hasOppAbove(o) && hasWallAbove((playerNum + 1) % 2)
 				&& !hasWallAbove(playerNum)
 				&& !hasWallRight((playerNum + 1) % 2)
 				&& !hasWallRight(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 1;
-			move[1] = players[playerNum][1] - 1;
+			Position move = new Position(cur.getCol()+1,cur.getRow()-1);
 			moves.add(move);
 		}
 		// up&down on the left
@@ -138,36 +118,28 @@ public class GameBoard {
 				&& !hasWallLeft(playerNum)
 				&& !hasWallAbove((playerNum + 1) % 2)
 				&& !hasWallAbove(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 1;
-			move[1] = players[playerNum][1] - 1;
+			Position move = new Position(cur.getCol()-1,cur.getRow()-1);
 			moves.add(move);
 		}
 		if (hasOppLeft(o) && hasWallLeft((playerNum + 1) % 2)
 				&& !hasWallLeft(playerNum)
 				&& !hasWallBelow((playerNum + 1) % 2)
 				&& !hasWallBelow(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 1;
-			move[1] = players[playerNum][1] + 1;
+			Position move = new Position(cur.getCol()-1,cur.getRow()+1);
 			moves.add(move);
 		}
 		// left&right downward
 		if (hasOppBelow(o) && hasWallBelow((playerNum + 1) % 2)
 				&& !hasWallBelow(playerNum)
 				&& !hasWallLeft((playerNum + 1) % 2) && !hasWallLeft(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] - 1;
-			move[1] = players[playerNum][1] + 1;
+			Position move = new Position(cur.getCol()-1,cur.getRow()+1);
 			moves.add(move);
 		}
 		if (hasOppBelow(o) && hasWallBelow((playerNum + 1) % 2)
 				&& !hasWallBelow(playerNum)
 				&& !hasWallRight((playerNum + 1) % 2)
 				&& !hasWallRight(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 1;
-			move[1] = players[playerNum][1] + 1;
+			Position move = new Position(cur.getCol()+1,cur.getRow()+1);
 			moves.add(move);
 		}
 		// up&down on the right
@@ -175,75 +147,99 @@ public class GameBoard {
 				&& !hasWallRight(playerNum)
 				&& !hasWallAbove((playerNum + 1) % 2)
 				&& !hasWallAbove(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 1;
-			move[1] = players[playerNum][1] - 1;
+			Position move = new Position(cur.getCol()+1,cur.getRow()-1);
 			moves.add(move);
 		}
 		if (hasOppRight(o) && hasWallRight((playerNum + 1) % 2)
 				&& !hasWallLeft(playerNum)
 				&& !hasWallBelow((playerNum + 1) % 2)
 				&& !hasWallBelow(playerNum)) {
-			int[] move = new int[2];
-			move[0] = players[playerNum][0] + 1;
-			move[1] = players[playerNum][1] + 1;
+			Position move = new Position(cur.getCol()+1,cur.getRow()+1);
 			moves.add(move);
 		}
 		return moves;
 	}
 
 	public void printMove(char o) {
-		List<int[]> moves = getMoves(o);
+		List<Position> moves = getMoves(o);
 		System.out.print("Moves: { ");
 		for (int i = 0; i < moves.size(); i++) {
-			System.out.print(Arrays.toString(moves.get(i)) + " ");
+			System.out.print(moves.get(i)+" ");
 		}
 		System.out.println("}");
 	}
 
-	public boolean win(char playercolor) {
+	public boolean hasWon(char playercolor) {
 		switch (playercolor) {
 		case 'r':
-			return players[0][0] == row - 1;
+			return player[0].getRow() == row - 1;
 		case 'b':
-			return players[1][0] == 0;
+			return player[1].getRow() == 0;
 		default:
 			throw new IllegalArgumentException();
 		}
 	}
 
-	protected void moveTo(char color, int[] param) {
+	protected void moveTo(char color, Position pos) {
+		int c = pos.getCol();
+		int r = pos.getRow();
 		if (color == 'r') {
-			players[0][0] = param[0];
-			players[0][1] = param[1];
+			player[0].setCol(c);
+			player[0].setRow(r);
 		}
 		if (color == 'b') {
-			players[1][0] = param[0];
-			players[1][1] = param[1];
+			player[1].setCol(c);
+			player[1].setRow(r);
 		}
+	}
+	
+	protected void moveTo(char color, int c, int r) {
+		if (color == 'r') {
+			player[0].setCol(c);
+			player[0].setRow(r);
+		}
+		if (color == 'b') {
+			player[1].setCol(c);
+			player[1].setRow(r);
+		}
+	}
+	
+	public Position redPos(){
+		return player[0];
+	}
+	
+	public Position bluePos(){
+		return player[1];
 	}
 
 	/**
-	 * Do a BFS with the wall placed to see if wall is valid
+	 * Do a BFS to see if player c can still win, used to test wall validity
 	 */
 	// TODO:
-	protected boolean stillWinnable(char o, int x, int y) {
-		if (o == 'v') {
-			vertical[x][y] = true;
-			vertical[x][y + 1] = true;
-		} else {
-			horizontal[x][y] = true;
-			horizontal[x + 1][y] = true;
-		}
-		
-		if (o == 'v') {
-			vertical[x][y] = false;
-			vertical[x][y + 1] = false;
-		} else {
-			horizontal[x][y] = false;
-			horizontal[x + 1][y] = false;
-		}
-	}
+//	public boolean winnable(char c) {
+//		int num = 0;
+//		if(c=='b'){
+//			num = 1;
+//		}
+//		// record old pawn position
+//		int[] original = new int[2];
+//		original[0] = players[num][0];
+//		original[1] = players[num][1];
+//		
+//		HashSet<List<Integer>> visited = new HashSet<>();
+//		Queue<int[]> queue = new LinkedList<>();
+//		
+//		queue.offer(players[num]);
+//		visited.add(Arrays.asList(players[num][0],players[num][1]));
+//		
+//		while(!queue.isEmpty()){
+//			int[] cur = queue.poll();
+//			moveTo(c,cur);
+//			if(hasWon(c))
+//				return true;
+//			
+//		}
+//	}
 
 	protected boolean placeWall(char o, int x, int y) {
 		// vertical bar
@@ -277,71 +273,79 @@ public class GameBoard {
 	// / ///
 	// ///////////////////////////////////////////////////////////////
 
-	private boolean hasOppAbove(char c) {
-		switch (c) {
-		case 'r':
-			return players[1][0] == players[0][0]
-					&& players[1][1] == players[0][1] - 1;
-		case 'b':
-			return players[1][0] == players[0][0]
-					&& players[1][1] - 1 == players[0][1];
+	private boolean hasOppAbove(char color) {
+		int playerNum = 0;
+		if(color=='b'){
+			playerNum = 1;
 		}
-		return false;
+		int myC = player[playerNum].getCol();
+		int myR = player[playerNum].getRow();
+		int opC = player[(1+playerNum)%2].getCol();
+		int opR = player[(1+playerNum)%2].getRow();
+		return myC == opC && myR == opR+1;
 	}
 
-	private boolean hasOppBelow(char c) {
-		switch (c) {
-		case 'r':
-			return players[1][0] == players[0][0]
-					&& players[1][1] == players[0][1] + 1;
-		case 'b':
-			return players[1][0] == players[0][0]
-					&& players[1][1] + 1 == players[0][1];
+	private boolean hasOppBelow(char color) {
+		int playerNum = 0;
+		if(color=='b'){
+			playerNum = 1;
 		}
-		return false;
+		int myC = player[playerNum].getCol();
+		int myR = player[playerNum].getRow();
+		int opC = player[(1+playerNum)%2].getCol();
+		int opR = player[(1+playerNum)%2].getRow();
+		return myC == opC && myR == opR-1;
 	}
 
-	private boolean hasOppLeft(char c) {
-		switch (c) {
-		case 'r':
-			return players[1][1] == players[0][1]
-					&& players[1][0] == players[0][0] - 1;
-		case 'b':
-			return players[1][1] == players[0][1]
-					&& players[1][0] - 1 == players[0][0];
+	private boolean hasOppLeft(char color) {
+		int playerNum = 0;
+		if(color=='b'){
+			playerNum = 1;
 		}
-		return false;
+		int myC = player[playerNum].getCol();
+		int myR = player[playerNum].getRow();
+		int opC = player[(1+playerNum)%2].getCol();
+		int opR = player[(1+playerNum)%2].getRow();
+		return myC - 1 == opC && myR == opR;
 	}
 
-	private boolean hasOppRight(char c) {
-		switch (c) {
-		case 'r':
-			return players[1][1] == players[0][1]
-					&& players[1][0] == players[0][0] + 1;
-		case 'b':
-			return players[1][1] == players[0][1]
-					&& players[1][0] + 1 == players[0][0];
+	private boolean hasOppRight(char color) {
+		int playerNum = 0;
+		if(color=='b'){
+			playerNum = 1;
 		}
-		return false;
+		int myC = player[playerNum].getCol();
+		int myR = player[playerNum].getRow();
+		int opC = player[(1+playerNum)%2].getCol();
+		int opR = player[(1+playerNum)%2].getRow();
+		return myC == opC-1 && myR == opR;
 	}
 
 	private boolean hasWallAbove(int playerNum) {
-		return players[playerNum][1] == 0
-				|| horizontal[players[playerNum][0]][players[playerNum][1] - 1];
+		int c = player[playerNum].getCol();
+		int r = player[playerNum].getRow();
+		return r == 0
+				|| horizontal[c][r - 1];
 	}
 
 	private boolean hasWallBelow(int playerNum) {
-		return players[playerNum][1] == row - 1
-				|| horizontal[players[playerNum][0]][players[playerNum][1]];
+		int c = player[playerNum].getCol();
+		int r = player[playerNum].getRow();
+		return r == row - 1
+				|| horizontal[c][r];
 	}
 
 	private boolean hasWallLeft(int playerNum) {
-		return players[playerNum][0] == 0
-				|| vertical[players[playerNum][0] - 1][players[playerNum][1]];
+		int c = player[playerNum].getCol();
+		int r = player[playerNum].getRow();
+		return c == 0
+				|| vertical[c - 1][r];
 	}
 
 	private boolean hasWallRight(int playerNum) {
-		return players[playerNum][0] == col - 1
-				|| vertical[players[playerNum][0]][players[playerNum][1]];
+		int c = player[playerNum].getCol();
+		int r = player[playerNum].getRow();
+		return c == col - 1
+				|| vertical[c][r];
 	}
 }
