@@ -1,6 +1,7 @@
 package quoridor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -191,6 +192,15 @@ public class GameBoard {
 		return moves;
 	}
 
+	public void printMove(char o) {
+		List<int[]> moves = getMoves(o);
+		System.out.print("Moves: { ");
+		for (int i = 0; i < moves.size(); i++) {
+			System.out.print(Arrays.toString(moves.get(i)) + " ");
+		}
+		System.out.println("}");
+	}
+
 	public boolean win(char playercolor) {
 		switch (playercolor) {
 		case 'r':
@@ -217,23 +227,23 @@ public class GameBoard {
 	 * Do a BFS with the wall placed to see if wall is valid
 	 */
 	// TODO:
-	// protected boolean stillWinnable(char o, int x, int y) {
-	// if (o == 'v') {
-	// vertical[x][y] = true;
-	// vertical[x][y + 1] = true;
-	// } else {
-	// horizontal[x][y] = true;
-	// horizontal[x + 1][y] = true;
-	// }
-	//
-	// if (o == 'v') {
-	// vertical[x][y] = false;
-	// vertical[x][y + 1] = false;
-	// } else {
-	// horizontal[x][y] = false;
-	// horizontal[x + 1][y] = false;
-	// }
-	// }
+	protected boolean stillWinnable(char o, int x, int y) {
+		if (o == 'v') {
+			vertical[x][y] = true;
+			vertical[x][y + 1] = true;
+		} else {
+			horizontal[x][y] = true;
+			horizontal[x + 1][y] = true;
+		}
+		
+		if (o == 'v') {
+			vertical[x][y] = false;
+			vertical[x][y + 1] = false;
+		} else {
+			horizontal[x][y] = false;
+			horizontal[x + 1][y] = false;
+		}
+	}
 
 	protected boolean placeWall(char o, int x, int y) {
 		// vertical bar
@@ -244,9 +254,6 @@ public class GameBoard {
 				return false;
 			if (horizontal[x][y] && horizontal[x + 1][y])
 				return false;
-			// TODO:
-			// if (!stillWinnable(o, x, y))
-			// return false;
 			vertical[x][y] = true;
 			vertical[x][y + 1] = true;
 			return true;
@@ -273,9 +280,11 @@ public class GameBoard {
 	private boolean hasOppAbove(char c) {
 		switch (c) {
 		case 'r':
-			return players[1][0] == players[0][0] && players[1][1] == players[0][1] - 1;
+			return players[1][0] == players[0][0]
+					&& players[1][1] == players[0][1] - 1;
 		case 'b':
-			return players[1][0] == players[0][0] && players[1][1] - 1 == players[0][1];
+			return players[1][0] == players[0][0]
+					&& players[1][1] - 1 == players[0][1];
 		}
 		return false;
 	}
@@ -283,9 +292,11 @@ public class GameBoard {
 	private boolean hasOppBelow(char c) {
 		switch (c) {
 		case 'r':
-			return players[1][0] == players[0][0] && players[1][1] == players[0][1] + 1;
+			return players[1][0] == players[0][0]
+					&& players[1][1] == players[0][1] + 1;
 		case 'b':
-			return players[1][0] == players[0][0] && players[1][1] + 1 == players[0][1];
+			return players[1][0] == players[0][0]
+					&& players[1][1] + 1 == players[0][1];
 		}
 		return false;
 	}
@@ -293,9 +304,11 @@ public class GameBoard {
 	private boolean hasOppLeft(char c) {
 		switch (c) {
 		case 'r':
-			return players[1][1] == players[0][1] && players[1][0] == players[0][0] - 1;
+			return players[1][1] == players[0][1]
+					&& players[1][0] == players[0][0] - 1;
 		case 'b':
-			return players[1][1] == players[0][1] && players[1][0] - 1 == players[0][0];
+			return players[1][1] == players[0][1]
+					&& players[1][0] - 1 == players[0][0];
 		}
 		return false;
 	}
@@ -303,9 +316,11 @@ public class GameBoard {
 	private boolean hasOppRight(char c) {
 		switch (c) {
 		case 'r':
-			return players[1][1] == players[0][1] && players[1][0] == players[0][0] + 1;
+			return players[1][1] == players[0][1]
+					&& players[1][0] == players[0][0] + 1;
 		case 'b':
-			return players[1][1] == players[0][1] && players[1][0] + 1 == players[0][0];
+			return players[1][1] == players[0][1]
+					&& players[1][0] + 1 == players[0][0];
 		}
 		return false;
 	}
