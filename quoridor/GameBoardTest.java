@@ -119,4 +119,14 @@ public class GameBoardTest {
 		assertEquals("Wrong down", down, moves.get(1));
 		assertEquals("Wrong right", right, moves.get(2));
 	}
+	
+	@Test
+	public void testBFS(){
+		assertTrue(gb.winnable('r'));
+		assertTrue(gb.winnable('b'));
+		for(int i = 0;i<9;i++){
+			gb.horizontal[i][5] = true;
+		}
+		assertFalse(gb.winnable('r'));
+	}
 }
